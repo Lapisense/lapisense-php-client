@@ -12,15 +12,15 @@ interface StorageInterface
     /**
      * @return string|null
      */
-    public function get($key);
+    public function get(string $key);
 
     /**
      * @return void
      */
-    public function set($key, $value);
+    public function set(string $key, string $value);
 
     /**
      * @return void
      */
-    public function delete($key);
+    public function delete(string $key);
 }

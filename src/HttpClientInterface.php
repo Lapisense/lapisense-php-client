@@ -14,17 +14,17 @@ interface HttpClientInterface
      * @param array<string, string> $params Query parameters.
      * @return array<string, mixed>|null
      */
-    public function get($url, $params = array());
+    public function get(string $url, $params = array());
 
     /**
      * @param array<string, mixed> $body Request body.
      * @return array<string, mixed>|null
      */
-    public function post($url, $body);
+    public function post(string $url, $body);
 
     /**
      * @param array<string, string> $params Query parameters.
      * @return array<string, mixed>|null
      */
-    public function delete($url, $params = array());
+    public function delete(string $url, $params = array());
 }
