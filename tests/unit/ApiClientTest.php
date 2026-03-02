@@ -129,7 +129,7 @@ class ApiClientTest extends TestCase
             ->willReturn(array('version' => '1.1.0'));
 
         $client = new ApiClient($this->storeUrl, $this->productUuid, $httpClient);
-        $client->checkUpdate('act-uuid-123', '1.0.0');
+        $client->checkUpdate('1.0.0', 'act-uuid-123');
     }
 
     public function testCheckUpdateReturnsNullWhenNoUpdateAvailable(): void
@@ -138,12 +138,12 @@ class ApiClientTest extends TestCase
         $httpClient->method('get')->willReturn(null);
 
         $client = new ApiClient($this->storeUrl, $this->productUuid, $httpClient);
-        $result = $client->checkUpdate('act-uuid-123', '1.0.0');
+        $result = $client->checkUpdate('1.0.0', 'act-uuid-123');
 
         $this->assertNull($result);
     }
 
-    public function testCheckFreeUpdateCallsGetWithoutActivationUuid(): void
+    public function testCheckUpdateWithoutActivationUuidOmitsParam(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
         $httpClient->expects($this->once())
@@ -158,17 +158,17 @@ class ApiClientTest extends TestCase
             ->willReturn(array('version' => '1.1.0'));
 
         $client = new ApiClient($this->storeUrl, $this->productUuid, $httpClient);
-        $client->checkFreeUpdate('1.0.0');
+        $client->checkUpdate('1.0.0');
     }
 
-    public function testCheckFreeUpdateReturnsArrayOnSuccess(): void
+    public function testCheckUpdateWithoutActivationUuidReturnsArrayOnSuccess(): void
     {
         $expected = array('version' => '1.1.0', 'download_url' => 'https://store.example.com/download');
         $httpClient = $this->createMock(HttpClientInterface::class);
         $httpClient->method('get')->willReturn($expected);
 
         $client = new ApiClient($this->storeUrl, $this->productUuid, $httpClient);
-        $result = $client->checkFreeUpdate('1.0.0');
+        $result = $client->checkUpdate('1.0.0');
 
         $this->assertSame($expected, $result);
     }

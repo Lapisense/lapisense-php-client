@@ -65,38 +65,26 @@ final class ApiClient
     }
 
     /**
-     * Check for updates (licensed product).
+     * Check for updates.
      *
-     * @param string $activationUuid
      * @param string $currentVersion
+     * @param string|null $activationUuid Omit for free products.
      * @return array<string, mixed>|null
      */
-    public function checkUpdate($activationUuid, $currentVersion)
+    public function checkUpdate($currentVersion, $activationUuid = null)
     {
-        return $this->httpClient->get(
-            $this->endpoint('/licensing/update-check'),
-            array(
-                'product_uuid'    => $this->productUuid,
-                'current_version' => $currentVersion,
-                'activation_uuid' => $activationUuid,
-            )
+        $params = array(
+            'product_uuid'    => $this->productUuid,
+            'current_version' => $currentVersion,
         );
-    }
 
-    /**
-     * Check for updates (free product).
-     *
-     * @param string $currentVersion
-     * @return array<string, mixed>|null
-     */
-    public function checkFreeUpdate($currentVersion)
-    {
+        if ($activationUuid !== null) {
+            $params['activation_uuid'] = $activationUuid;
+        }
+
         return $this->httpClient->get(
             $this->endpoint('/licensing/update-check'),
-            array(
-                'product_uuid'    => $this->productUuid,
-                'current_version' => $currentVersion,
-            )
+            $params
         );
     }
 

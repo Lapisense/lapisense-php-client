@@ -21,8 +21,8 @@ $client = new ApiClient($storeUrl, $productUuid, $httpClient);
 
 $client->activate($licenseKey, $siteUrl);
 $client->deactivate($activationUuid);
-$client->checkUpdate($activationUuid, $currentVersion);
-$client->checkFreeUpdate($currentVersion);
+$client->checkUpdate($currentVersion);                    // free product
+$client->checkUpdate($currentVersion, $activationUuid);   // licensed product
 $client->getProductInfo();
 ```
 
