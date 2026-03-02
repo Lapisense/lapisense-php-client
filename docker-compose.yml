@@ -1,6 +1,24 @@
 services:
   php:
-    build: .
+    # Local development service with PCOV for coverage
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: develop
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.5}
     volumes:
-      - .:/app
-    working_dir: /app
+      - .:/app/
+    command: /bin/sh -c "while sleep 1000; do :; done"
+  actions-tester:
+    # CI testing service (no volume mounted - uses files baked into image at build time)
+    # In CI: uses pre-built php-client:latest image
+    # Locally: builds from Dockerfile builder target
+    image: php-client:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.5}
+    command: /bin/sh -c "while sleep 1000; do :; done"
