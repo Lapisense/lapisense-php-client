@@ -13,7 +13,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Lapisense\\PHPClient\\Tests\\": "tests/"
+            "Lapisense\\PHPClient\\Tests\\Unit\\": "tests/unit/"
         }
     },
     "config": {
