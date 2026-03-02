@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    name: Quality (PHP 8.5)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Lint (PHPCS)
+        run: vendor/bin/phpcs
+
+      - name: Static analysis (PHPStan)
+        run: vendor/bin/phpstan analyse
+
+      - name: Mess detection (PHPMD)
+        run: vendor/bin/phpmd src text phpmd.xml.dist
+
+      - name: Tests with coverage
+        run: vendor/bin/phpunit --coverage-clover build/coverage.xml
+
+      - name: Check coverage
+        run: |
+          LINE_RATE=$(php -r "\$x = simplexml_load_file('build/coverage.xml'); echo \$x->project->metrics['coveredstatements'] / \$x->project->metrics['statements'];")
+          echo "Line coverage: ${LINE_RATE}"
+          php -r "if ((float)'${LINE_RATE}' < 1.0) { echo \"Coverage below 100%\n\"; exit(1); }"
+
+  test:
+    name: Test (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run tests
+        run: vendor/bin/phpunit
