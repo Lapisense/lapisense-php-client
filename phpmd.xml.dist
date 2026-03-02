@@ -9,12 +9,17 @@
 
     <description>PHPMD rules for Lapisense PHP Client</description>
 
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
     <rule ref="rulesets/codesize.xml" />
     <rule ref="rulesets/cleancode.xml" />
     <rule ref="rulesets/controversial.xml" />
     <rule ref="rulesets/design.xml" />
-    <rule ref="rulesets/naming.xml" />
-    <rule ref="rulesets/unusedcode.xml" />
 
-    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortVariable" />
+        <exclude name="BooleanGetMethodName" />
+    </rule>
+
+    <rule ref="rulesets/unusedcode.xml" />
 </ruleset>
