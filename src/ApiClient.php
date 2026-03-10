@@ -68,7 +68,7 @@ final class ApiClient
      * Check for updates.
      *
      * @param string $currentVersion
-     * @param string|null $activationUuid Omit for free products.
+     * @param string|null $activationUuid Optional activation UUID.
      * @return array<string, mixed>|null
      */
     public function checkUpdate($currentVersion, $activationUuid = null)
