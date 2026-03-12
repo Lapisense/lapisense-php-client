@@ -1,0 +1,54 @@
+name: Cleanup
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  prune-caches:
+    name: Prune stale caches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete caches not used in the last 24 hours
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cutoff=$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)
+
+          while true; do
+            ids=$(gh api "repos/$GH_REPO/actions/caches?per_page=100&sort=last_accessed_at&direction=asc" \
+              --jq ".actions_caches[] | select(.last_accessed_at < \"$cutoff\") | .id")
+
+            if [ -z "$ids" ]; then
+              echo "No more stale caches"
+              break
+            fi
+
+            echo "$ids" | while read -r id; do
+              echo "Deleting cache $id"
+              gh api -X DELETE "repos/$GH_REPO/actions/caches/$id" || true
+            done
+          done
+
+  prune-artifacts:
+    name: Prune expired artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete artifacts older than 24 hours
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cutoff=$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)
+
+          gh api --paginate "repos/$GH_REPO/actions/artifacts" \
+            --jq ".artifacts[] | select(.created_at < \"$cutoff\") | .id" \
+          | while read -r id; do
+            echo "Deleting artifact $id"
+            gh api -X DELETE "repos/$GH_REPO/actions/artifacts/$id" || true
+          done
