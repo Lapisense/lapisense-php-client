@@ -52,9 +52,10 @@ class ApiClientTest extends TestCase
             ->with(
                 $this->baseEndpoint . '/licensing/activate',
                 array(
-                    'license_key'  => 'ABCD-1234',
-                    'product_uuid' => $this->productUuid,
-                    'site_url'     => 'https://client.example.com',
+                    'license_key'     => 'ABCD-1234',
+                    'product_uuid'    => $this->productUuid,
+                    'identifier'      => 'https://client.example.com',
+                    'identifier_type' => 'site_url',
                 )
             )
             ->willReturn(array('activation_uuid' => 'act-uuid'));

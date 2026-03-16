@@ -35,17 +35,19 @@ final class ApiClient
      * Activate a license.
      *
      * @param string $licenseKey
-     * @param string $siteUrl
+     * @param string $identifier Client identifier (URL, machine ID, device fingerprint, etc.).
+     * @param string $identifierType Type of identifier: 'site_url', 'machine_id', 'device_fingerprint', 'custom'.
      * @return array<string, mixed>|null
      */
-    public function activate($licenseKey, $siteUrl)
+    public function activate($licenseKey, $identifier, $identifierType = 'site_url')
     {
         return $this->httpClient->post(
             $this->endpoint('/licensing/activate'),
             array(
-                'license_key'  => $licenseKey,
-                'product_uuid' => $this->productUuid,
-                'site_url'     => $siteUrl,
+                'license_key'     => $licenseKey,
+                'product_uuid'    => $this->productUuid,
+                'identifier'      => $identifier,
+                'identifier_type' => $identifierType,
             )
         );
     }
